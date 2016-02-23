@@ -81,8 +81,9 @@ int main(int argc, char * argv) {
 	playerList.numPlayers = (char) numberOfPlayers;
 	playerList.whosTurn = 0;
 
-	playerList.players[0] = InitPlayer('X', TRUE);
+	playerList.players[0] = InitPlayer('X', FALSE);
 	playerList.players[1] = InitPlayer('O', FALSE);
+	//playerList.players[2] = InitPlayer('Y', FALSE);
 	// end temp init.
 
 	while(TRUE) {
@@ -147,7 +148,7 @@ int IsWon(GameBoard game) {
 		}
 	}
 
-	if (IsDrawn && (game.tile[NUMBER_OF_GAME_SQUARES-1][NUMBER_OF_GAME_SQUARES-1] != 0x0)) {
+	if (!winOnLDiag && IsDrawn && (game.tile[NUMBER_OF_GAME_SQUARES-1][NUMBER_OF_GAME_SQUARES-1] != 0x0)) {
 		//printf("won on draw\n");
 		return FALSE;
 	}
@@ -243,33 +244,46 @@ void gameEnd(int gamestate) {
 }
 
 long int bot(GameBoard game, int * row, int * col, PlayerList playerlist, char botTile) {
-	long int sum = 0;
+	long int sum = -500; // hopefully that's far enough lol...
 	for (int i = 0; i < NUMBER_OF_GAME_SQUARES; i++) {
 		for (int j = 0; j < NUMBER_OF_GAME_SQUARES; j++) {
+
 			long int sumbefore = sum;
+
 			if (game.tile[i][j] == 0x0) {
-				*row = i;
-				*col = j;
+				sum = 0;
+				//*row = i;
+				//*col = j;
 				game.tile[i][j] = playerlist.players[playerlist.whosTurn].tile;
 
 				int isBotWon = IsWon(game);
+				//printf("Board:\n");
+				//printBoard(game);
+				//printf("is won return: %i %c\n", isBotWon, isBotWon);
 				if (isBotWon == botTile) {
-					return 10;
+					//printf("theoret bot win %c\n", botTile);
+					sum += 1;
 				}
 				else if (isBotWon == FALSE) {
-					return 0;
+					//printf("theoret draw \n");
+					sum += 0;
 				}
 				else if (isBotWon == TRUE) {
+					//printf("called next bot level, ");
 					PlayerList listCopy = playerlist;
 					listCopy.whosTurn = (listCopy.whosTurn + 1) % listCopy.numPlayers;
-					sum += bot(game, row, col, listCopy, botTile);
+					//printf("%c's turn\n", listCopy.players[listCopy.whosTurn].tile);
+					sum += bot(game, row, col, listCopy, botTile) +5;
 				}
 				else {
+					//printf("theoret bot loss %c\n", botTile);
 					// game was won by someone else
-					return -10;
+					sum += -15;
 				}
+				game.tile[i][j] = 0x0;
 			}
 			if (sum > sumbefore) {
+				//printf("sum: %i\n", sum);
 				*row = i;
 				*col = j;
 			}
