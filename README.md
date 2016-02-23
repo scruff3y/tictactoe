@@ -2,7 +2,7 @@
 
 Tic Tac Toe game in C. Built-in bot too!
 
-Currently, the game can be made any size larger than 2x2 (though they will always be square).
+Currently, the game can be made any size larger than 2x2 (though they will always be square). Also you have to edit the source and recompile to make the changes.
 
 Still to come:
 -
