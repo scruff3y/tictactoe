@@ -351,13 +351,15 @@ PlayerList InitPlayerList(char numberOfPlayers) {
 	playerList.players[0] = InitPlayer('X', TRUE);
 	playerList.players[1] = InitPlayer('O', TRUE);
 
+	char currentLetter = 0;
+
 	for(char i = 0; i < numberOfPlayers; i++) {
 		char offset = 2;
 		if (currentLetter == 'O') {
 			offset--;
 			i++;
 		}
-		char currentLetter = i + 0x41;
+		currentLetter = i + 0x41;
 		playerList.players[i+offset] = InitPlayer(currentLetter, TRUE);
 	}
 	return playerList;
